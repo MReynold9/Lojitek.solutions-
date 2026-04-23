@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lojitek AI</title>
+<style>
+body { font-family: Arial; background:#0f172a; color:white; text-align:center; }
+#chat { width:90%; max-width:500px; margin:auto; height:400px; overflow:auto; border:1px solid #333; padding:10px; }
+input { width:70%; padding:10px; }
+button { padding:10px; background:#2563eb; color:white; border:none; }
+</style>
+</head>
+
+<body>
+
+<h2>🤖 Lojitek AI</h2>
+
+<div id="chat"></div>
+
+<input id="msg" placeholder="Ekri mesaj..." />
+<button onclick="send()">Voye</button>
+
+<script>
+async function send() {
+  const msg = document.getElementById("msg").value;
+  const chat = document.getElementById("chat");
+
+  chat.innerHTML += "<p><b>Ou:</b> " + msg + "</p>";
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer YOUR_API_KEY",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "Ou se Lojitek AI, ede biznis grandi, bay ide, appreciation, ak maketing."
+        },
+        { role: "user", content: msg }
+      ]
+    })
+  });
+
+  const data = await res.json();
+  chat.innerHTML += "<p><b>AI:</b> " + data.choices[0].message.content + "</p>";
+}
+</script>
+
+</body>
+</html>
