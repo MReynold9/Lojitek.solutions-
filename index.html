@@ -10,7 +10,14 @@ body {
   font-family: Arial;
   background:#0b1220;
   color:white;
-  display:flex;
+}
+
+/* MOBILE HEADER */
+.topbar {
+  display:none;
+  background:#0f172a;
+  padding:10px;
+  text-align:center;
 }
 
 /* SIDEBAR */
@@ -19,119 +26,110 @@ body {
   background:#0f172a;
   padding:15px;
   height:100vh;
+  position:fixed;
 }
 
 .sidebar h2 {
   color:#3b82f6;
 }
 
-.chat-list {
-  margin-top:20px;
-}
-
 .chat-item {
   padding:10px;
-  margin-bottom:10px;
+  margin-top:10px;
   background:#1e293b;
   border-radius:8px;
+  cursor:pointer;
 }
 
 /* MAIN */
 .main {
-  flex:1;
+  margin-left:250px;
   display:flex;
   flex-direction:column;
+  height:100vh;
 }
 
-/* HEADER */
-.header {
-  padding:15px;
-  border-bottom:1px solid #1e293b;
-  display:flex;
-  justify-content:space-between;
-}
-
-.chat-box {
+/* CHAT */
+#chat {
   flex:1;
-  padding:20px;
+  padding:15px;
   overflow:auto;
-}
-
-.message {
-  margin-bottom:15px;
-}
-
-.user {
-  text-align:right;
-}
-
-.ai {
-  text-align:left;
 }
 
 /* INPUT */
 .input-area {
   display:flex;
   padding:10px;
-  border-top:1px solid #1e293b;
 }
 
 input {
   flex:1;
   padding:10px;
-  border:none;
   border-radius:5px;
+  border:none;
 }
 
 button {
-  margin-left:10px;
   padding:10px;
+  margin-left:10px;
   background:#2563eb;
   color:white;
   border:none;
   border-radius:5px;
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:768px){
+  .sidebar {
+    display:none;
+  }
+  .main {
+    margin-left:0;
+  }
+  .topbar {
+    display:block;
+  }
 }
 </style>
 </head>
 
 <body>
 
+<!-- MOBILE HEADER -->
+<div class="topbar">🤖 Lojitek AI</div>
+
 <!-- SIDEBAR -->
 <div class="sidebar">
   <h2>🤖 Lojitek AI</h2>
-  <div class="chat-list">
-    <div class="chat-item">Nouvo chat</div>
-    <div class="chat-item">Ide biznis</div>
-    <div class="chat-item">Maketing</div>
-  </div>
+
+  <div class="chat-item" onclick="quick('Nouvo chat')">Nouvo chat</div>
+  <div class="chat-item" onclick="quick('Banm ide biznis')">Ide biznis</div>
+  <div class="chat-item" onclick="quick('Banm konsèy maketing')">Maketing</div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h3>Chat</h3>
-    <span>Online</span>
-  </div>
+<div id="chat"></div>
 
-  <!-- CHAT -->
-  <div id="chat" class="chat-box"></div>
-
-  <!-- INPUT -->
-  <div class="input-area">
-    <input id="msg" placeholder="Ekri mesaj..." />
-    <button onclick="send()">Voye</button>
-  </div>
+<div class="input-area">
+  <input id="msg" placeholder="Ekri mesaj..." />
+  <button onclick="send()">Voye</button>
+</div>
 
 </div>
 
 <script>
+function quick(text){
+  document.getElementById("msg").value = text;
+  send();
+}
+
 async function send() {
   const msg = document.getElementById("msg").value;
   const chat = document.getElementById("chat");
 
-  chat.innerHTML += `<div class="message user"><b>Ou:</b> ${msg}</div>`;
+  chat.innerHTML += `<p><b>Ou:</b> ${msg}</p>`;
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -142,7 +140,7 @@ async function send() {
     body: JSON.stringify({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "Ou se Lojitek AI, ede biznis grandi." },
+        { role: "system", content: "Ou se Lojitek AI, ede biznis grandi ak maketing." },
         { role: "user", content: msg }
       ]
     })
@@ -150,7 +148,9 @@ async function send() {
 
   const data = await res.json();
 
-  chat.innerHTML += `<div class="message ai"><b>AI:</b> ${data.choices[0].message.content}</div>`;
+  chat.innerHTML += `<p><b>AI:</b> ${data.choices[0].message.content}</p>`;
+  document.getElementById("msg").value="";
+  chat.scrollTop = chat.scrollHeight;
 }
 </script>
 
