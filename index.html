@@ -1,30 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lojitek AI</title>
+
 <style>
-body { font-family: Arial; background:#0f172a; color:white; text-align:center; }
-#chat { width:90%; max-width:500px; margin:auto; height:400px; overflow:auto; border:1px solid #333; padding:10px; }
-input { width:70%; padding:10px; }
-button { padding:10px; background:#2563eb; color:white; border:none; }
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0b1220;
+  color:white;
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width:250px;
+  background:#0f172a;
+  padding:15px;
+  height:100vh;
+}
+
+.sidebar h2 {
+  color:#3b82f6;
+}
+
+.chat-list {
+  margin-top:20px;
+}
+
+.chat-item {
+  padding:10px;
+  margin-bottom:10px;
+  background:#1e293b;
+  border-radius:8px;
+}
+
+/* MAIN */
+.main {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* HEADER */
+.header {
+  padding:15px;
+  border-bottom:1px solid #1e293b;
+  display:flex;
+  justify-content:space-between;
+}
+
+.chat-box {
+  flex:1;
+  padding:20px;
+  overflow:auto;
+}
+
+.message {
+  margin-bottom:15px;
+}
+
+.user {
+  text-align:right;
+}
+
+.ai {
+  text-align:left;
+}
+
+/* INPUT */
+.input-area {
+  display:flex;
+  padding:10px;
+  border-top:1px solid #1e293b;
+}
+
+input {
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+}
+
+button {
+  margin-left:10px;
+  padding:10px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:5px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🤖 Lojitek AI</h2>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>🤖 Lojitek AI</h2>
+  <div class="chat-list">
+    <div class="chat-item">Nouvo chat</div>
+    <div class="chat-item">Ide biznis</div>
+    <div class="chat-item">Maketing</div>
+  </div>
+</div>
 
-<div id="chat"></div>
+<!-- MAIN -->
+<div class="main">
 
-<input id="msg" placeholder="Ekri mesaj..." />
-<button onclick="send()">Voye</button>
+  <!-- HEADER -->
+  <div class="header">
+    <h3>Chat</h3>
+    <span>Online</span>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="chat-box"></div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <input id="msg" placeholder="Ekri mesaj..." />
+    <button onclick="send()">Voye</button>
+  </div>
+
+</div>
 
 <script>
 async function send() {
   const msg = document.getElementById("msg").value;
   const chat = document.getElementById("chat");
 
-  chat.innerHTML += "<p><b>Ou:</b> " + msg + "</p>";
+  chat.innerHTML += `<div class="message user"><b>Ou:</b> ${msg}</div>`;
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -35,17 +142,15 @@ async function send() {
     body: JSON.stringify({
       model: "gpt-4o-mini",
       messages: [
-        {
-          role: "system",
-          content: "Ou se Lojitek AI, ede biznis grandi, bay ide, appreciation, ak maketing."
-        },
+        { role: "system", content: "Ou se Lojitek AI, ede biznis grandi." },
         { role: "user", content: msg }
       ]
     })
   });
 
   const data = await res.json();
-  chat.innerHTML += "<p><b>AI:</b> " + data.choices[0].message.content + "</p>";
+
+  chat.innerHTML += `<div class="message ai"><b>AI:</b> ${data.choices[0].message.content}</div>`;
 }
 </script>
 
