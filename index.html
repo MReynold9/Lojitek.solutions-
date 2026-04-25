@@ -5,99 +5,74 @@
 <title>Lojitek AI</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#0b1220;color:white;}
-#messages{padding:15px;height:80vh;overflow:auto;}
-.user{text-align:right;margin:10px;}
-.ai{text-align:left;margin:10px;}
-.input{position:fixed;bottom:0;width:100%;display:flex;padding:10px;background:#111;}
-input{flex:1;padding:10px;border-radius:20px;border:none;}
-button{margin-left:10px;background:#2563eb;color:white;border:none;border-radius:50%;padding:10px;}
-</style>
-
-</head>
-
-<body>
-
-<h2 style="padding:10px;">🤖 Lojitek AI</h2>
-
-<div id="messages"></div>
-
-<div class="input">
-  <input id="msg" placeholder="Mande Lojitek AI..." />
-  <button onclick="send()">➤</button>
-</div>
-
-<script>
-async function send(){
-  const msg = document.getElementById("msg").value;
-  const box = document.getElementById("messages");
-
-  box.innerHTML += `<div class="user">${msg}</div>`;
-
-  const res = await fetch("/api/chat", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ message: msg })
-  });
-
-  const data = await res.json();
-
-  box.innerHTML += `<div class="ai">${data.reply}</div>`;
-  document.getElementById("msg").value="";
-}
-</script>
-
-</body>
-</html>
 body{
   margin:0;
   font-family:Arial;
   background:#0b1220;
   color:white;
+  display:flex;
 }
 
-/* HEADER */
-h2{
+/* SIDEBAR */
+.sidebar{
+  width:250px;
+  background:#111827;
   padding:15px;
-  text-align:center;
+  height:100vh;
 }
 
-/* CHAT BOX */
-#messages{
-  padding:15px;
-  height:70vh;
-  overflow-y:auto;
+.sidebar h3{
+  margin-bottom:20px;
+}
+
+.sidebar button{
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  background:#2563eb;
+  border:none;
+  color:white;
+  border-radius:10px;
+}
+
+/* MAIN */
+.main{
+  flex:1;
   display:flex;
   flex-direction:column;
 }
 
-/* MESSAGE STYLE */
-.user{
-  align-self:flex-end;
-  background:#2563eb;
-  padding:10px;
-  border-radius:15px;
-  margin:5px;
-  max-width:80%;
+/* HEADER */
+.header{
+  padding:15px;
+  border-bottom:1px solid #222;
 }
 
-.ai{
-  align-self:flex-start;
+/* CONTENT */
+.content{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.card{
   background:#1f2937;
-  padding:10px;
-  border-radius:15px;
-  margin:5px;
-  max-width:80%;
+  padding:15px;
+  border-radius:10px;
 }
 
-/* INPUT */
-.input{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  display:flex;
+/* CHAT */
+.chat{
   padding:10px;
-  background:#111827;
+  border-top:1px solid #222;
+  display:flex;
 }
 
 input{
@@ -105,14 +80,96 @@ input{
   padding:12px;
   border-radius:20px;
   border:none;
-  font-size:16px;
 }
 
-button{
+button.send{
   margin-left:10px;
+  border:none;
   background:#2563eb;
   color:white;
-  border:none;
   border-radius:50%;
   padding:12px;
 }
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{
+    display:none;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>🤖 Lojitek AI</h3>
+  <button onclick="newChat()">Nouvo chat</button>
+  <button onclick="quick('ide biznis')">Ide biznis</button>
+  <button onclick="quick('maketing')">Maketing</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="header">
+    Bonjour Reynold 👋
+  </div>
+
+  <div class="content" id="messages">
+
+    <h2>Par où commencer ?</h2>
+
+    <div class="cards">
+      <div class="card" onclick="quick('kreye imaj')">🖼️ Kreye imaj</div>
+      <div class="card" onclick="quick('mizik')">🎸 Kreye mizik</div>
+      <div class="card" onclick="quick('ekri')">📄 Ekri tèks</div>
+      <div class="card" onclick="quick('motivasyon')">✨ Motivasyon</div>
+    </div>
+
+  </div>
+
+  <div class="chat">
+    <input id="input" placeholder="Mande Lojitek AI...">
+    <button class="send" onclick="send()">➤</button>
+  </div>
+
+</div>
+
+<script>
+function send(){
+  let input = document.getElementById("input");
+  let msg = input.value;
+
+  if(msg==="") return;
+
+  let div = document.createElement("div");
+  div.innerHTML = "<p style='text-align:right;'>"+msg+"</p>";
+  document.getElementById("messages").appendChild(div);
+
+  input.value="";
+
+  setTimeout(()=>{
+    let ai = document.createElement("div");
+    ai.innerHTML = "<p style='color:#60a5fa;'>🤖 Lojitek AI: Mwen ap reponn ou...</p>";
+    document.getElementById("messages").appendChild(ai);
+  },500);
+}
+
+function quick(text){
+  document.getElementById("input").value = text;
+  send();
+}
+
+function newChat(){
+  document.getElementById("messages").innerHTML="";
+}
+</script>
+
+</body>
+</html>
