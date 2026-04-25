@@ -5,135 +5,45 @@
 <title>Lojitek AI</title>
 
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#000;
-  color:white;
-}
-
-/* HEADER */
-.header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px;
-}
-
-.logo {
-  font-size:20px;
-  font-weight:bold;
-}
-
-/* CENTER */
-.center {
-  text-align:center;
-  margin-top:60px;
-  padding:20px;
-}
-
-.center h1 {
-  font-size:28px;
-}
-
-/* BUTTONS */
-.option {
-  background:#1c1c1c;
-  padding:15px;
-  margin:10px auto;
-  width:90%;
-  max-width:400px;
-  border-radius:30px;
-  text-align:left;
-  cursor:pointer;
-}
-
-/* CHAT */
-#chat {
-  padding:15px;
-}
-
-/* INPUT */
-.input-area {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#111;
-  padding:10px;
-  display:flex;
-}
-
-input {
-  flex:1;
-  padding:10px;
-  border-radius:20px;
-  border:none;
-}
-
-button {
-  margin-left:10px;
-  padding:10px;
-  border:none;
-  background:#2563eb;
-  color:white;
-  border-radius:50%;
-}
+body{margin:0;font-family:Arial;background:#0b1220;color:white;}
+#messages{padding:15px;height:80vh;overflow:auto;}
+.user{text-align:right;margin:10px;}
+.ai{text-align:left;margin:10px;}
+.input{position:fixed;bottom:0;width:100%;display:flex;padding:10px;background:#111;}
+input{flex:1;padding:10px;border-radius:20px;border:none;}
+button{margin-left:10px;background:#2563eb;color:white;border:none;border-radius:50%;padding:10px;}
 </style>
+
 </head>
 
 <body>
 
-<div class="header">
-  <div class="logo">🤖 Lojitek AI</div>
-</div>
+<h2 style="padding:10px;">🤖 Lojitek AI</h2>
 
-<div class="center">
-  <h2>Bonjour Reynold</h2>
-  <h1>Par où commencer ?</h1>
+<div id="messages"></div>
 
-  <div class="option" onclick="quick('Kreye yon imaj pou mwen')">🖼️ Créer une image</div>
-  <div class="option" onclick="quick('Kreye mizik')">🎸 Créer de la musique</div>
-  <div class="option" onclick="quick('Ekri yon tèks pwofesyonèl')">📄 Rédiger</div>
-  <div class="option" onclick="quick('Banm motivasyon jodi a')">✨ Donne du peps</div>
-</div>
-
-<div id="chat"></div>
-
-<div class="input-area">
-  <input id="msg" placeholder="Demander à Lojitek AI..." />
+<div class="input">
+  <input id="msg" placeholder="Mande Lojitek AI..." />
   <button onclick="send()">➤</button>
 </div>
 
 <script>
-function quick(text){
-  document.getElementById("msg").value = text;
-  send();
-}
-
-async function send() {
+async function send(){
   const msg = document.getElementById("msg").value;
-  const chat = document.getElementById("chat");
+  const box = document.getElementById("messages");
 
-  chat.innerHTML += `<p><b>Ou:</b> ${msg}</p>`;
+  box.innerHTML += `<div class="user">${msg}</div>`;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer YOUR_API_KEY",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "Ou se Lojitek AI, ede biznis ak lavi." },
-        { role: "user", content: msg }
-      ]
-    })
+  const res = await fetch("/api/chat", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ message: msg })
   });
 
   const data = await res.json();
 
-  chat.innerHTML += `<p><b>AI:</b> ${data.choices[0].message.content}</p>`;
+  box.innerHTML += `<div class="ai">${data.reply}</div>`;
+  document.getElementById("msg").value="";
 }
 </script>
 
